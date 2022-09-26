@@ -1,9 +1,9 @@
 "use strict";
-
+//My tvMAze api key:  uB-opaTjB_hyq4NN8igG1ImPjwEErOYD
+//Root URL: https://api.tvmaze.com
 const $showsList = $("#shows-list");
 const $episodesArea = $("#episodes-area");
 const $searchForm = $("#search-form");
-
 
 /** Given a search term, search for tv shows that match that query.
  *
@@ -12,29 +12,13 @@ const $searchForm = $("#search-form");
  *    (if no image URL given by API, put in a default image URL)
  */
 
-async function getShowsByTerm( /* term */) {
-  // ADD: Remove placeholder & make request to TVMaze search shows API.
-
-  return [
-    {
-      id: 1767,
-      name: "The Bletchley Circle",
-      summary:
-        `<p><b>The Bletchley Circle</b> follows the journey of four ordinary 
-           women with extraordinary skills that helped to end World War II.</p>
-         <p>Set in 1952, Susan, Millie, Lucy and Jean have returned to their 
-           normal lives, modestly setting aside the part they played in 
-           producing crucial intelligence, which helped the Allies to victory 
-           and shortened the war. When Susan discovers a hidden code behind an
-           unsolved murder she is met by skepticism from the police. She 
-           quickly realises she can only begin to crack the murders and bring
-           the culprit to justice with her former friends.</p>`,
-      image:
-          "http://static.tvmaze.com/uploads/images/medium_portrait/147/369403.jpg"
-    }
-  ]
+async function getShowsByTerm(userSearch) {
+  let response = await axios.get(
+    `http://api.tvmaze.com/search/shows?q=${userSearch}`
+  );
+  console.log(response.data);
+  return response.data;
 }
-
 
 /** Given list of shows, create markup for each and to DOM */
 
@@ -43,10 +27,10 @@ function populateShows(shows) {
 
   for (let show of shows) {
     const $show = $(
-        `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
+      `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img 
-              src="http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg" 
+              src="${show.image}"
               alt="Bletchly Circle San Francisco" 
               class="w-25 mr-3">
            <div class="media-body">
@@ -58,18 +42,19 @@ function populateShows(shows) {
            </div>
          </div>  
        </div>
-      `);
+      `
+    );
 
-    $showsList.append($show);  }
+    $showsList.append($show);
+  }
 }
-
 
 /** Handle search form submission: get shows from API and display.
  *    Hide episodes area (that only gets shown if they ask for episodes)
  */
 
 async function searchForShowAndDisplay() {
-  const term = $("#searchForm-term").val();
+  const term = $("#search-query").val();
   const shows = await getShowsByTerm(term);
 
   $episodesArea.hide();
@@ -81,7 +66,6 @@ $searchForm.on("submit", async function (evt) {
   await searchForShowAndDisplay();
 });
 
-
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
@@ -91,3 +75,6 @@ $searchForm.on("submit", async function (evt) {
 /** Write a clear docstring for this function... */
 
 // function populateEpisodes(episodes) { }
+for (let show in getShowsByTerm("seinfeld")) {
+  console.log("working");
+}
